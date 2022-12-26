@@ -1,7 +1,7 @@
 import ping from "./package/ping/index.js"
 import express from "./package/express/index.js";
 import bodyParser from "./package/body-parser/index.js";
-import mongoose from "./package/mongoose/index.jsmongoose";
+import mongoose from "./package/mongoose/index.js";
 
 import { Printer } from "./models/printer.js";
 
