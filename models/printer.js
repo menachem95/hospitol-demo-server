@@ -1,4 +1,4 @@
-import mongoose from "./package/mongoose/index.js";
+import mongoose from "mongoose";
 
 const {Schema} = mongoose;
 

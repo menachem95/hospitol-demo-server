@@ -1,9 +1,9 @@
-import ping from "./package/ping/index.js"
-import express from "./package/express/index.js";
-import bodyParser from "./package/body-parser/index.js";
-import mongoose from "./package/mongoose/index.js";
+import ping from "ping";
+import express from "express";
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
 
-//import { Printer } from "./models/printer.js";
+import { Printer } from "./models/printer.js";
 
 import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js"
@@ -53,14 +53,24 @@ app.post("/ping", async (req, res, next) => {
   });
   let result = await Promise.all(promises);
 
+  // for (let printer of printers) {
+  //   newPrinters.push({
+  //     address: printer.address,
+  //     type: printer.type,
+  //     online: result.find((promise) => promise.inputHost === printer.address)
+  //       .alive,
+  //   });
+  // }
+
   for (let printer of printers) {
     newPrinters.push({
       address: printer.address,
       type: printer.type,
-      online: result.find((promise) => promise.inputHost === printer.address)
+      online: Math.random() > 0.3 ? true : false
         .alive,
     });
   }
+
   console.log(newPrinters);
   res.json(newPrinters);
 });

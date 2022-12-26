@@ -1,7 +1,7 @@
-import express from "./package/express/index.js";
+import { Router } from "express";
 import { addPrinter } from "../controlers/handelPrinter.js";
 
-const router = express.Router();
+const router = Router();
 
 router.post("/add-printer", addPrinter);
 
