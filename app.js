@@ -3,7 +3,7 @@ import express from "./package/express/index.js";
 import bodyParser from "./package/body-parser/index.js";
 import mongoose from "./package/mongoose/index.js";
 
-import { Printer } from "./models/printer.js";
+//import { Printer } from "./models/printer.js";
 
 import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js"
