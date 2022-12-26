@@ -4,7 +4,7 @@
  * A builder builds command line arguments for ping in mac environment
  * @module lib/builder/mac
  */
-var util = require('util');
+import { format } from 'util';
 
 var builder = {};
 
@@ -76,35 +76,35 @@ builder.getCommandArguments = function (target, config) {
 
         ret = ret.concat([
             '-W',
-            util.format('%d', _config.timeout * 1000),
+            format('%d', _config.timeout * 1000),
         ]);
     }
 
     if (_config.deadline) {
         ret = ret.concat([
             '-t',
-            util.format('%d', _config.deadline),
+            format('%d', _config.deadline),
         ]);
     }
 
     if (_config.min_reply) {
         ret = ret.concat([
             '-c',
-            util.format('%d', _config.min_reply),
+            format('%d', _config.min_reply),
         ]);
     }
 
     if (_config.sourceAddr) {
         ret = ret.concat([
             '-S',
-            util.format('%s', _config.sourceAddr),
+            format('%s', _config.sourceAddr),
         ]);
     }
 
     if (_config.packetSize) {
         ret = ret.concat([
             '-s',
-            util.format('%d', _config.packetSize),
+            format('%d', _config.packetSize),
         ]);
     }
 
@@ -126,4 +126,4 @@ builder.getSpawnOptions = function () {
 };
 
 
-module.exports = builder;
+export default builder;

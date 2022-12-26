@@ -3,21 +3,21 @@
 /* global describe it before after*/
 /* eslint no-unused-expressions: 0 */
 
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var os = require('os');
-var cp = require('child_process');
-var q = require('q');
-var fs = require('fs');
-var path = require('path');
-var util = require('util');
-var events = require('events');
+import { expect } from 'chai';
+import { stub as _stub } from 'sinon';
+import os from 'os';
+import cp from 'child_process';
+import { defer } from 'q';
+import { createReadStream } from 'fs';
+import { posix, join } from 'path';
+import { format } from 'util';
+import { EventEmitter } from 'events';
 
-var loadFixturePath = require('./load-fixture-path');
-var ping = require('..');
+import loadFixturePath from './load-fixture-path';
+import { promise, sys } from '..';
 
 // Some constants
-var ANSWER = require('./fixture/answer');
+import ANSWER from './fixture/answer';
 
 var PLATFORMS = [
     'window',
@@ -36,10 +36,10 @@ var PLATFORM_TO_EXTRA_ARGUMENTS = {
 };
 
 var pathToAnswerKey = function (p) {
-    var basename = path.posix.basename(p, '.txt');
-    var dirname = path.posix.basename(path.posix.dirname(p));
-    var osname = path.posix.basename(
-        path.posix.dirname(path.posix.dirname(p))
+    var basename = posix.basename(p, '.txt');
+    var dirname = posix.basename(posix.dirname(p));
+    var osname = posix.basename(
+        posix.dirname(posix.dirname(p))
     );
 
     return [osname, dirname, basename].join('_');
@@ -47,10 +47,10 @@ var pathToAnswerKey = function (p) {
 
 var mockOutSpawn = function (fp) {
     return function () {
-        var e = new events.EventEmitter();
+        var e = new EventEmitter();
         e.stdout = e;
 
-        var s = fs.createReadStream(fp);
+        var s = createReadStream(fp);
         s.on('data', function (line) {
             e.emit('data', line);
         });
@@ -65,12 +65,12 @@ var mockOutSpawn = function (fp) {
 var createTestCase = function (platform, pingExecution) {
     var stubs = [];
 
-    describe(util.format('On %s platform', platform), function () {
+    describe(format('On %s platform', platform), function () {
         var fixturePaths = loadFixturePath(platform);
 
         before(function () {
             stubs.push(
-                sinon.stub(os, 'platform').callsFake(function () { return platform; })
+                _stub(os, 'platform').callsFake(function () { return platform; })
             );
         });
 
@@ -83,7 +83,7 @@ var createTestCase = function (platform, pingExecution) {
         describe('runs with default config', function () {
             fixturePaths.forEach(function (fp) {
                 it(
-                    util.format('Using |%s|', pathToAnswerKey(fp)),
+                    format('Using |%s|', pathToAnswerKey(fp)),
                     function () {
                         return pingExecution(fp);
                     }
@@ -94,7 +94,7 @@ var createTestCase = function (platform, pingExecution) {
         describe('runs with custom config', function () {
             fixturePaths.forEach(function (fp) {
                 it(
-                    util.format('Using |%s|', pathToAnswerKey(fp)),
+                    format('Using |%s|', pathToAnswerKey(fp)),
                     function () {
                         return pingExecution(fp, {
                             timeout: 10,
@@ -108,7 +108,7 @@ var createTestCase = function (platform, pingExecution) {
         describe('runs with custom config with default gone', function () {
             fixturePaths.forEach(function (fp) {
                 it(
-                    util.format('Using |%s|', pathToAnswerKey(fp)),
+                    format('Using |%s|', pathToAnswerKey(fp)),
                     function () {
                         return pingExecution(fp, {
                             timeout: false,
@@ -124,10 +124,10 @@ var createTestCase = function (platform, pingExecution) {
 describe('ping timeout and deadline options', function () {
     describe('on linux platform', function () {
         beforeEach(function () {
-            this.platformStub = sinon.stub(os, 'platform').callsFake(function () { return 'linux'; });
-            const fixturePath = path.join(__dirname, 'fixture',
+            this.platformStub = _stub(os, 'platform').callsFake(function () { return 'linux'; });
+            const fixturePath = join(__dirname, 'fixture',
                 'linux', 'en', 'sample1.txt');
-            this.spawnStub = sinon.stub(cp, 'spawn').callsFake(mockOutSpawn(fixturePath));
+            this.spawnStub = _stub(cp, 'spawn').callsFake(mockOutSpawn(fixturePath));
         });
 
         afterEach(function () {
@@ -136,7 +136,7 @@ describe('ping timeout and deadline options', function () {
         });
 
         it('are forwarded to the ping binary', function () {
-            return ping.promise.probe('whatever', {
+            return promise.probe('whatever', {
                 timeout: 47,
                 deadline: 83,
             }).then(function () {
@@ -150,10 +150,10 @@ describe('ping timeout and deadline options', function () {
 
     describe('on windows platform', function () {
         beforeEach(function () {
-            this.platformStub = sinon.stub(os, 'platform').callsFake(function () { return 'window'; });
-            const fixturePath = path.join(__dirname, 'fixture',
+            this.platformStub = _stub(os, 'platform').callsFake(function () { return 'window'; });
+            const fixturePath = join(__dirname, 'fixture',
                 'window', 'en', 'sample1.txt');
-            this.spawnStub = sinon.stub(cp, 'spawn').callsFake(mockOutSpawn(fixturePath));
+            this.spawnStub = _stub(cp, 'spawn').callsFake(mockOutSpawn(fixturePath));
         });
 
         afterEach(function () {
@@ -162,7 +162,7 @@ describe('ping timeout and deadline options', function () {
         });
 
         it('results in an error as deadline is not supported', function () {
-            return ping.promise.probe('whatever', {
+            return promise.probe('whatever', {
                 timeout: 47,
                 deadline: 83,
             }).then(function () {
@@ -173,10 +173,10 @@ describe('ping timeout and deadline options', function () {
 
     describe('on mac platform', function () {
         beforeEach(function () {
-            this.platformStub = sinon.stub(os, 'platform').callsFake(function () { return 'freebsd'; });
-            const fixturePath = path.join(__dirname, 'fixture',
+            this.platformStub = _stub(os, 'platform').callsFake(function () { return 'freebsd'; });
+            const fixturePath = join(__dirname, 'fixture',
                 'macos', 'en', 'sample1.txt');
-            this.spawnStub = sinon.stub(cp, 'spawn').callsFake(mockOutSpawn(fixturePath));
+            this.spawnStub = _stub(cp, 'spawn').callsFake(mockOutSpawn(fixturePath));
         });
 
         afterEach(function () {
@@ -185,7 +185,7 @@ describe('ping timeout and deadline options', function () {
         });
 
         it('are forwarded to the ping binary', function () {
-            return ping.promise.probe('whatever', {
+            return promise.probe('whatever', {
                 timeout: 47,
                 deadline: 83,
             }).then(function () {
@@ -200,9 +200,9 @@ describe('ping timeout and deadline options', function () {
 
 describe('Ping in callback mode', function () {
     var pingExecution = function (fp, args) {
-        var deferred = q.defer();
+        var deferred = defer();
 
-        var stub = sinon.stub(cp, 'spawn').callsFake(mockOutSpawn(fp));
+        var stub = _stub(cp, 'spawn').callsFake(mockOutSpawn(fp));
 
         var cb = function (isAlive, err) {
             if (err) {
@@ -218,7 +218,7 @@ describe('Ping in callback mode', function () {
             _args.v6 = true;
         }
 
-        ping.sys.probe('whatever', cb, _args);
+        sys.probe('whatever', cb, _args);
 
         stub.restore();
 
@@ -237,7 +237,7 @@ describe('Ping in callback mode', function () {
 
 describe('Ping in promise mode', function () {
     var pingExecution = function (fp, args) {
-        var stub = sinon.stub(cp, 'spawn').callsFake(mockOutSpawn(fp));
+        var stub = _stub(cp, 'spawn').callsFake(mockOutSpawn(fp));
 
         var ret = null;
         var _args = args;
@@ -245,7 +245,7 @@ describe('Ping in promise mode', function () {
             _args = _args || {};
             _args.v6 = true;
         }
-        ret = ping.promise.probe('whatever', _args);
+        ret = promise.probe('whatever', _args);
 
         stub.restore();
 
@@ -268,7 +268,7 @@ describe('Ping ipv6 on MAC OS', function () {
 
     before(function () {
         stubs.push(
-            sinon.stub(os, 'platform').callsFake(function () { return platform; })
+            _stub(os, 'platform').callsFake(function () { return platform; })
         );
     });
 
@@ -283,9 +283,9 @@ describe('Ping ipv6 on MAC OS', function () {
 
         fixturePaths.forEach(function (fp) {
             it('Should raise an error', function (done) {
-                var stub = sinon.stub(cp, 'spawn').callsFake(mockOutSpawn(fp));
+                var stub = _stub(cp, 'spawn').callsFake(mockOutSpawn(fp));
 
-                var ret = ping.promise.probe(
+                var ret = promise.probe(
                     'whatever',
                     {v6: true, timeout: 10}
                 );
@@ -307,7 +307,7 @@ describe('Ping ipv6 on MAC OS', function () {
 describe('Ping in promise mode with unknown exception', function () {
     var pingExecution = function (fp, args) {
         var unknownException = new Error('Unknown error!');
-        var stub = sinon.stub(cp, 'spawn').throws(unknownException);
+        var stub = _stub(cp, 'spawn').throws(unknownException);
 
         var ret = null;
         var _args = args;
@@ -315,7 +315,7 @@ describe('Ping in promise mode with unknown exception', function () {
             _args = _args || {};
             _args.v6 = true;
         }
-        ret = ping.promise.probe('whatever', _args);
+        ret = promise.probe('whatever', _args);
 
         stub.restore();
 

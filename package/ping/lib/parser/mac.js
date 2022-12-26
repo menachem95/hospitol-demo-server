@@ -1,9 +1,9 @@
 'use strict';
 
-var util = require('util');
-var __ = require('underscore');
+import { inherits } from 'util';
+import { all } from 'underscore';
 
-var base = require('./base');
+import base from './base';
 
 /**
  * @constructor
@@ -15,7 +15,7 @@ function MacParser(addr, config) {
     base.call(this, addr, config);
 }
 
-util.inherits(MacParser, base);
+inherits(MacParser, base);
 
 /**
  * Process output's header
@@ -70,7 +70,7 @@ MacParser.prototype._processFooter = function (line) {
         var m3 = regExp.exec(line);
         var m4 = regExp.exec(line);
 
-        if (__.all([m1, m2, m3, m4])) {
+        if (all([m1, m2, m3, m4])) {
             this._response.min = parseFloat(m1[1], 10);
             this._response.avg = parseFloat(m2[1], 10);
             this._response.max = parseFloat(m3[1], 10);
@@ -82,4 +82,4 @@ MacParser.prototype._processFooter = function (line) {
     }
 };
 
-module.exports = MacParser;
+export default MacParser;

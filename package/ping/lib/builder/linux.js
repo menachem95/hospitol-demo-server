@@ -4,7 +4,7 @@
  * A builder builds command line arguments for ping in linux environment
  * @module lib/builder/linux
  */
-var util = require('util');
+import { format } from 'util';
 
 var builder = {};
 
@@ -70,35 +70,35 @@ builder.getCommandArguments = function (target, config) {
     if (_config.timeout) {
         ret = ret.concat([
             '-W',
-            util.format('%d', _config.timeout),
+            format('%d', _config.timeout),
         ]);
     }
 
     if (_config.deadline) {
         ret = ret.concat([
             '-w',
-            util.format('%d', _config.deadline),
+            format('%d', _config.deadline),
         ]);
     }
 
     if (_config.min_reply) {
         ret = ret.concat([
             '-c',
-            util.format('%d', _config.min_reply),
+            format('%d', _config.min_reply),
         ]);
     }
 
     if (_config.sourceAddr) {
         ret = ret.concat([
             '-I',
-            util.format('%s', _config.sourceAddr),
+            format('%s', _config.sourceAddr),
         ]);
     }
 
     if (_config.packetSize) {
         ret = ret.concat([
             '-s',
-            util.format('%d', _config.packetSize),
+            format('%d', _config.packetSize),
         ]);
     }
 
@@ -122,4 +122,4 @@ builder.getSpawnOptions = function () {
     };
 };
 
-module.exports = builder;
+export default builder;

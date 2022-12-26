@@ -1,9 +1,9 @@
 'use strict';
 
-var util = require('util');
-var __ = require('underscore');
+import { inherits, format } from 'util';
+import { find, filter, map, all } from 'underscore';
 
-var base = require('./base');
+import base from './base';
 
 /**
  * @constructor
@@ -16,7 +16,7 @@ function WinParser(addr, config) {
     this._ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/;
 }
 
-util.inherits(WinParser, base);
+inherits(WinParser, base);
 
 /**
  * Process output's header
@@ -32,13 +32,13 @@ WinParser.prototype._processHeader = function (line) {
 
     if (isPingNumeric) {
         // For those missing [***], get the first token which match IPV4 regex
-        this._response.host = __.find(tokens, function (t) {
+        this._response.host = find(tokens, function (t) {
             return this._ipv4Regex.test(t);
         }, this);
         this._response.numeric_host = this._response.host;
     } else {
         // For those has [***], anchor with such token
-        var numericHost = __.find(tokens, function (t) {
+        var numericHost = find(tokens, function (t) {
             return t.indexOf('[') !== -1;
         }, this);
         var numericHostIndex = tokens.indexOf(numericHost);
@@ -63,13 +63,13 @@ WinParser.prototype._processHeader = function (line) {
  */
 WinParser.prototype._processIPV6Body = function (line) {
     var tokens = line.split(' ');
-    var dataFields = __.filter(tokens, function (token) {
+    var dataFields = filter(tokens, function (token) {
         var isDataField = token.indexOf('=') >= 0 || token.indexOf('<') >= 0;
         return isDataField;
     });
 
     // refs #65: Support system like french which has an extra space
-    dataFields = __.map(dataFields, function (dataField) {
+    dataFields = map(dataFields, function (dataField) {
         var ret = dataField;
         var dataFieldIndex = tokens.indexOf(dataField);
         var nextIndex = dataFieldIndex + 1;
@@ -87,7 +87,7 @@ WinParser.prototype._processIPV6Body = function (line) {
     var expectDataFieldInReplyLine = 1;
     if (dataFields.length >= expectDataFieldInReplyLine) {
         // XXX: Assume time will alaways get keyword ms for all language
-        var timeKVP = __.find(dataFields, function (dataField) {
+        var timeKVP = find(dataFields, function (dataField) {
             return dataField.search(/(ms|мс)/i) >= 0;
         });
         var regExp = /([0-9.]+)/;
@@ -103,7 +103,7 @@ WinParser.prototype._processIPV6Body = function (line) {
  */
 WinParser.prototype._processIPV4Body = function (line) {
     var tokens = line.split(' ');
-    var byteTimeTTLFields = __.filter(tokens, function (token) {
+    var byteTimeTTLFields = filter(tokens, function (token) {
         var isDataField = token.indexOf('=') >= 0 || token.indexOf('<') >= 0;
         return isDataField;
     });
@@ -112,8 +112,8 @@ WinParser.prototype._processIPV4Body = function (line) {
     var isReplyLine = byteTimeTTLFields.length >= expectDataFieldInReplyLine;
     if (isReplyLine) {
         var packetSize = this._pingConfig.packetSize;
-        var byteField = __.find(byteTimeTTLFields, function (dataField) {
-            var packetSizeToken = util.format('=%d', packetSize);
+        var byteField = find(byteTimeTTLFields, function (dataField) {
+            var packetSizeToken = format('=%d', packetSize);
             var isByteField = dataField.indexOf(packetSizeToken) >= 0;
             return isByteField;
         });
@@ -167,7 +167,7 @@ WinParser.prototype._processFooter = function (line) {
         var m2 = regExp.exec(line);
         var m3 = regExp.exec(line);
 
-        if (__.all([m1, m2, m3])) {
+        if (all([m1, m2, m3])) {
             this._response.min = parseFloat(m1[1], 10);
             this._response.max = parseFloat(m2[1], 10);
             this._response.avg = parseFloat(m3[1], 10);
@@ -176,4 +176,4 @@ WinParser.prototype._processFooter = function (line) {
     }
 };
 
-module.exports = WinParser;
+export default WinParser;

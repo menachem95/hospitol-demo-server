@@ -13,15 +13,15 @@
 * 
 */
 
-var sys = require("util"),
-pcap = require('pcap');
+import { puts } from "util";
+import { createSession, decode } from 'pcap';
     
 var addr = process.argv[3] || 'localhost';
 setInterval(function() {probe(addr)}, 1000);
 
 
 function probe(addr) {
-    sys.puts('sending a probe to ' + addr);
+    puts('sending a probe to ' + addr);
     var dgram = require('dgram');
     var message = new Buffer("Some bytes");
     var client = dgram.createSocket("udp4");
@@ -30,14 +30,14 @@ function probe(addr) {
 }
 
 // create a pcap session
-pcap_session = pcap.createSession(process.argv[2] || 'eth0', "");
+pcap_session = createSession(process.argv[2] || 'eth0', "");
 
 
 // listen for packets, decode them, and feed the simple printer
 pcap_session.addListener('packet', function (raw_packet) {
-    var packet = pcap.decode.packet(raw_packet);
+    var packet = decode.packet(raw_packet);
     if (packet.link && packet.link.ip && packet.link.ip.saddr==addr) {
-        packet.link && packet.link.ip && sys.puts(packet.link.ip.saddr + " is alive");
+        packet.link && packet.link.ip && puts(packet.link.ip.saddr + " is alive");
     }
 });
 

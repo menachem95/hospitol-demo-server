@@ -2,7 +2,7 @@
 
 /* eslint no-unused-vars: 0 */
 
-var __ = require('underscore');
+import { values, extend, reduce, each, isNumber } from 'underscore';
 
 /**
  * Parsed response
@@ -77,7 +77,7 @@ parser.prototype.STATES = {
  * @return {this} - This instance
  */
 parser.prototype._changeState = function (state) {
-    var states = __.values(this.STATES);
+    var states = values(this.STATES);
     if (states.indexOf(state) < 0) {
         throw new Error('Unknown state');
     }
@@ -150,7 +150,7 @@ parser.prototype.eat = function (line) {
  * @return {PingResponse} - Response from parsing ping output
  */
 parser.prototype.getResult = function () {
-    var ret = __.extend({}, this._response);
+    var ret = extend({}, this._response);
 
     // Concat output
     ret.output = this._lines.join('\n');
@@ -172,7 +172,7 @@ parser.prototype.getResult = function () {
     ) {
         var numberOfSamples = this._times.length;
 
-        var sumOfAllSquareDifferences = __.reduce(
+        var sumOfAllSquareDifferences = reduce(
             this._times,
             function (memory, time) {
                 var differenceFromMean = time - ret.avg;
@@ -190,9 +190,9 @@ parser.prototype.getResult = function () {
     }
 
     // Fix min, avg, max, stddev up to 3 decimal points
-    __.each(['min', 'avg', 'max', 'stddev', 'packetLoss'], function (key) {
+    each(['min', 'avg', 'max', 'stddev', 'packetLoss'], function (key) {
         var v = ret[key];
-        if (__.isNumber(v)) {
+        if (isNumber(v)) {
             ret[key] = v.toFixed(3);
         }
     });
@@ -200,4 +200,4 @@ parser.prototype.getResult = function () {
     return ret;
 };
 
-module.exports = parser;
+export default parser;

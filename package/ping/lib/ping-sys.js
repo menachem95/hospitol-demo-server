@@ -11,7 +11,7 @@
 */
 
 // Promise implementation
-var ping = require('./ping-promise');
+import { probe as __probe } from './ping-promise';
 
 // TODO:
 // 1. Port round trip time to this callback
@@ -34,11 +34,12 @@ function probe(addr, cb, config) {
     // Do not reassign function parameter
     var _config = config || {};
 
-    return ping.probe(addr, _config).then(function (res) {
+    return __probe(addr, _config).then(function (res) {
         cb(res.alive, null);
     }).catch(function (err) {
         cb(null, err);
     }).done();
 }
 
-exports.probe = probe;
+const _probe = probe;
+export { _probe as probe };

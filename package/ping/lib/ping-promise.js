@@ -11,18 +11,18 @@
 */
 
 // System library
-var util = require('util');
-var net = require('net');
-var cp = require('child_process');
-var os = require('os');
+import { format } from 'util';
+import { isIPv6 } from 'net';
+import { spawn } from 'child_process';
+import { platform as _platform } from 'os';
 
 // 3rd-party library
-var Q = require('q');
-var __ = require('underscore');
+import { defer, reject } from 'q';
+import { each } from 'underscore';
 
 // Our library
-var builderFactory = require('./builder/factory');
-var parserFactory = require('./parser/factory');
+import { createBuilder, getExecutablePath } from './builder/factory';
+import { createParser } from './parser/factory';
 
 /**
  * Refer to probe()
@@ -31,35 +31,35 @@ function _probe(addr, config) {
     // Do not reassign function argument
     var _config = config || {};
     if (_config.v6 === undefined) {
-        _config.v6 = net.isIPv6(addr);
+        _config.v6 = isIPv6(addr);
     }
 
     // Convert callback base system command to promise base
-    var deferred = Q.defer();
+    var deferred = defer();
 
     // Spawn a ping process
     var ping = null;
-    var platform = os.platform();
+    var platform = _platform();
     try {
-        var argumentBuilder = builderFactory.createBuilder(platform);
-        var pingExecutablePath = builderFactory.getExecutablePath(
+        var argumentBuilder = createBuilder(platform);
+        var pingExecutablePath = getExecutablePath(
             platform, _config.v6
         );
         var pingArgs = argumentBuilder.getCommandArguments(addr, _config);
         var spawnOptions = argumentBuilder.getSpawnOptions();
-        ping = cp.spawn(pingExecutablePath, pingArgs, spawnOptions);
+        ping = spawn(pingExecutablePath, pingArgs, spawnOptions);
     } catch (err) {
         deferred.reject(err);
         return deferred.promise;
     }
 
     // Initial parser
-    var parser = parserFactory.createParser(addr, platform, _config);
+    var parser = createParser(addr, platform, _config);
 
     // Register events from system ping
     ping.once('error', function () {
         var err = new Error(
-            util.format(
+            format(
                 'ping.probe: %s. %s',
                 'there was an error while executing the ping program. ',
                 'Check the path or permissions...'
@@ -80,7 +80,7 @@ function _probe(addr, config) {
         var lines = outstring.join('').split('\n');
 
         // Parse line one by one
-        __.each(lines, parser.eat, parser);
+        each(lines, parser.eat, parser);
 
         // Get result
         var ret = parser.getResult();
@@ -103,9 +103,10 @@ function probe(addr, config) {
         var probePromise = _probe(addr, config);
         return probePromise;
     } catch (error) {
-        var errorPromise = Q.reject(error);
+        var errorPromise = reject(error);
         return errorPromise;
     }
 }
 
-exports.probe = probe;
+const __probe = probe;
+export { __probe as probe };

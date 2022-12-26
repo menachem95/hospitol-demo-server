@@ -1,8 +1,8 @@
 'use strict';
 
-var util = require('util');
-var base = require('./base');
-var MacParser = require('./mac');
+import { inherits } from 'util';
+import base from './base';
+import { prototype } from './mac';
 
 /**
  * @constructor
@@ -14,7 +14,7 @@ function LinuxParser(addr, config) {
     base.call(this, addr, config);
 }
 
-util.inherits(LinuxParser, base);
+inherits(LinuxParser, base);
 
 /**
  * Process output's body
@@ -44,7 +44,7 @@ LinuxParser.prototype._processHeader = function (line) {
  */
 LinuxParser.prototype._processBody = function (line) {
     // Reuse mac parser implementation
-    MacParser.prototype._processBody.call(this, line);
+    prototype._processBody.call(this, line);
 };
 
 /**
@@ -53,7 +53,7 @@ LinuxParser.prototype._processBody = function (line) {
  */
 LinuxParser.prototype._processFooter = function (line) {
     // Reuse mac parser implementation
-    MacParser.prototype._processFooter.call(this, line);
+    prototype._processFooter.call(this, line);
 };
 
-module.exports = LinuxParser;
+export default LinuxParser;

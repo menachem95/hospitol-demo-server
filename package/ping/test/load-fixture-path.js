@@ -1,7 +1,7 @@
 'use strict';
 
-var path = require('path');
-var glob = require('glob');
+import { dirname as _dirname, posix } from 'path';
+import { sync } from 'glob';
 
 /**
  * Check out linux platform
@@ -35,7 +35,7 @@ function isWindow(p) {
     return p && p.match(/^win/) !== null;
 }
 
-module.exports = function (platform) {
+export default function (platform) {
     var dirname = null;
 
     if (isLinux(platform)) {
@@ -46,7 +46,7 @@ module.exports = function (platform) {
         dirname = 'window';
     }
 
-    var currentDirectory = path.dirname(__filename);
+    var currentDirectory = _dirname(__filename);
 
     var targetDirectory = [currentDirectory, 'fixture'];
     if (dirname) {
@@ -56,7 +56,7 @@ module.exports = function (platform) {
         '**',
         '*.txt',
     ]);
-    targetDirectory = path.posix.join.apply(path.posix, targetDirectory);
+    targetDirectory = posix.join.apply(posix, targetDirectory);
 
-    return glob.sync(targetDirectory);
+    return sync(targetDirectory);
 };

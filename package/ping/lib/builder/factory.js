@@ -1,12 +1,12 @@
 'use strict';
 
-var __ = require('underscore');
-var util = require('util');
+import { some } from 'underscore';
+import { format } from 'util';
 
 // Our library
-var linuxBuilder = require('./linux');
-var macBuilder = require('./mac');
-var winBuilder = require('./win');
+import linuxBuilder from './linux';
+import macBuilder from './mac';
+import winBuilder from './win';
 
 /**
  * A factory creates argument builders for different platform
@@ -52,7 +52,7 @@ factory.isWindow = function (p) {
  * @return {bool} - True or False
  */
 factory.isPlatformSupport = function (p) {
-    return __.some([
+    return some([
         this.isWindow(p),
         this.isLinux(p),
         this.isMacOS(p),
@@ -68,7 +68,7 @@ factory.isPlatformSupport = function (p) {
  */
 factory.getExecutablePath = function (platform, v6) {
     if (!this.isPlatformSupport(platform)) {
-        throw new Error(util.format('Platform |%s| is not support', platform));
+        throw new Error(format('Platform |%s| is not support', platform));
     }
 
     var ret = null;
@@ -94,7 +94,7 @@ factory.getExecutablePath = function (platform, v6) {
  */
 factory.createBuilder = function (platform) {
     if (!this.isPlatformSupport(platform)) {
-        throw new Error(util.format('Platform |%s| is not support', platform));
+        throw new Error(format('Platform |%s| is not support', platform));
     }
 
     var ret = null;
@@ -110,4 +110,4 @@ factory.createBuilder = function (platform) {
     return ret;
 };
 
-module.exports = factory;
+export default factory;
