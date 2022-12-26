@@ -1,4 +1,4 @@
-import ping from "ping"
+import * as ping from "ping"
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
