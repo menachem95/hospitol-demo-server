@@ -1,4 +1,4 @@
-import ping from "./package/ping.js"
+import ping from "./package/ping/index.js"
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
