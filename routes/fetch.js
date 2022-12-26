@@ -1,4 +1,4 @@
-import express from "./package/express/index.js";
+import express from "../../package/express/index.js";
 import { fetchPrinters, fetchPrintersFromJson } from "../controlers/fetch.js";
 
 const router = express.Router();
