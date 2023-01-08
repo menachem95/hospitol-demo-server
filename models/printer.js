@@ -6,31 +6,31 @@ const {Schema} = mongoose;
 const printersSchema = new Schema({
     address: {
         type: String,
-        required: true
+        // required: true
     },
     room: {
         type: String,
-        required: true
+        // required: true
     },
     department: {
         type: String,
-        required: true
+        // required: true
     },
     description: {
         type: String,
-        required: true
+        // required: true
     },
     printerModel: {
         type: String,
-        required: true
+        // required: true
     },
     line: {
         type: String,
-        required: true
+        // required: true
     },
     pag: {
         type: String,
-        required: true
+        // required: true
     },
 });
 
