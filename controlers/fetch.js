@@ -20,7 +20,7 @@ export async function fetchPrinters(req, res, next) {
     return;
   }
   try {
-    const database = client.db("hospitol");
+    const database = client.db("hospital");
     const printers = database.collection("printers");
     const printers_find = await printers.find().toArray();
 

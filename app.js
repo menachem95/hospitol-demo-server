@@ -9,8 +9,8 @@ import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js"
 
 const MONGODB_URI =
- // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
-"mongodb+srv://m:ZBpLoaQ6UcHed5ho@cluster0.avjb12c.mongodb.net/hospitol"
+ `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
+// "mongodb+srv://m:ZBpLoaQ6UcHed5ho@cluster0.avjb12c.mongodb.net/hospital"
 const app = express();
 
 app.use((req, res, next) => {
