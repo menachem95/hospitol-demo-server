@@ -12,7 +12,7 @@ export async function fetchPrinters(req, res, next) {
   console.log("start");
   debugger;
   const uri =
-    "mongodb+srv://m:ZBpLoaQ6UcHed5ho@cluster0.avjb12c.mongodb.net/hospitol?retryWrites=true&w=majority";
+    "mongodb+srv://m:ZBpLoaQ6UcHed5ho@cluster0.avjb12c.mongodb.net/hospital?retryWrites=true&w=majority";
 
   const client = await MongoClient.connect(uri);
   if (!client) {
