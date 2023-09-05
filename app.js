@@ -2,6 +2,7 @@ import ping from "ping";
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import cors from "cors";
 
 import { Printer } from "./models/printer.js";
 
@@ -14,6 +15,7 @@ const MONGODB_URI =
 const app = express();
 
 app.use((req, res, next) => {
+  
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -22,6 +24,13 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+app.use(cors({
+  origin: "http://localhost:3000", // Vervang door de juiste oorsprong
+  methods: "GET, POST, PUT, DELETE", // Vervang door de toegestane methoden
+  allowedHeaders: "Content-Type", // Vervang door de toegestane headers
+  credentials: true, // Schakel cookies en verificatie in indien nodig
+  optionsSuccessStatus: 200
+}));
 
 app.use(bodyParser.json());
 

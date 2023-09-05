@@ -1,7 +1,7 @@
 
 import { Printer } from "../models/printer.js";
 
-export function addPrinter(req, res, next) {
+export const addPrinter = (req, res, next) => {
 
   
  
@@ -32,3 +32,20 @@ export function addPrinter(req, res, next) {
  
  // res.send();
 }
+
+export const DeletePrinter = async (req, res, next) => {
+  const pag = req.params.pag
+  console.log("req.params.pag:", pag)
+  // const find = Printer.findOne({pag: req.params.pag});
+  // console.log(find)
+  Printer.findOneAndDelete({pag});
+
+
+  try {
+    await Printer.findOneAndDelete({pag});
+    res.status(200).json("The Printer has been removed");
+  } catch (error) {
+    next(error);
+  }
+};
+

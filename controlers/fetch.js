@@ -27,24 +27,24 @@ export async function fetchPrinters(req, res, next) {
     let promises = [];
     let newPrinters = [];
 
-    // promises = printers_find.map(async (printer) => {
-    //   return await ping.promise.probe(printer.address);
-    // });
-    // let result = await Promise.all(promises);
+    promises = printers_find.map(async (printer) => {
+      return await ping.promise.probe(printer.address);
+    });
+    let result = await Promise.all(promises);
 
-    // for (let printer of printers_find) {
-    //   newPrinters.push({
-    //     ...printer,
-    //     online: result.find((promise) => promise.inputHost === printer.address)
-    //       .alive,
-    //   });
-    // }
     for (let printer of printers_find) {
       newPrinters.push({
         ...printer,
-        online: Math.random() > 0.3 ? true : false.alive,
+        online: result.find((promise) => promise.inputHost === printer.address)
+          .alive,
       });
     }
+    // for (let printer of printers_find) {
+    //   newPrinters.push({
+    //     ...printer,
+    //     online: Math.random() > 0.3 ? true : false.alive,
+    //   });
+    // }
 
     console.log("end");
 
