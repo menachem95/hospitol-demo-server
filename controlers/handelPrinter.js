@@ -33,17 +33,25 @@ export const addPrinter = (req, res, next) => {
  // res.send();
 }
 
-export const DeletePrinter = async (req, res, next) => {
-  const pag = req.params.pag
-  console.log("req.params.pag:", pag)
-  // const find = Printer.findOne({pag: req.params.pag});
-  // console.log(find)
-  Printer.findOneAndDelete({pag});
-
-
+export const deletePrinter = async (req, res, next) => {
+ 
   try {
-    await Printer.findOneAndDelete({pag});
+    await Printer.findByIdAndDelete(req.params._id);
     res.status(200).json("The Printer has been removed");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePrinter = async (req, res, next) => {
+  const _id = req.body._id;
+  const printer = {...req.body}
+  delete printer._id
+  console.log("printers:", printer)
+  try {
+    const updetedPrinter = await Printer.findByIdAndUpdate(_id, {...printer})
+   
+    res.status(200).json("The Printer has been updated");
   } catch (error) {
     next(error);
   }

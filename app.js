@@ -24,9 +24,12 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+// app.options('*', cors());
+
 app.use(cors({
   origin: "http://localhost:3000", // Vervang door de juiste oorsprong
-  methods: "GET, POST, PUT, DELETE", // Vervang door de toegestane methoden
+  methods: "GET, POST, PUT, DELETE, OPTIONS", // Vervang door de toegestane methoden
   allowedHeaders: "Content-Type", // Vervang door de toegestane headers
   credentials: true, // Schakel cookies en verificatie in indien nodig
   optionsSuccessStatus: 200
