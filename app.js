@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.options('*', cors());
+app.options('*', cors());
 
 app.use(cors({
   origin: "http://localhost:3000", // Vervang door de juiste oorsprong
