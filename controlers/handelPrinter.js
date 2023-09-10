@@ -43,6 +43,7 @@ export const deletePrinter = async (req, res, next) => {
   }
 };
 
+
 export const updatePrinter = async (req, res, next) => {
   const _id = req.body._id;
   const printer = {...req.body}
