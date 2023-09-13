@@ -8,6 +8,7 @@ import { Printer } from "./models/printer.js";
 
 import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js"
+import { pingFromArray } from "./controlers/ping.js"
 
 const MONGODB_URI =
 // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
@@ -36,6 +37,48 @@ app.options('*', cors());
 // }));
 
 app.use(bodyParser.json());
+
+
+pingFromArray([{
+  "_id": "63bfeec099402acb3849ff9b"
+  ,
+  "printerModel": "320",
+  "type": "printer",
+  "address": "1",
+  "room": "21",
+  "department": "הנהלה",
+  "description": "1",
+  "line": "123",
+  "pag": "1"
+},
+{
+  "_id":  "63bfeec099402acb3849ff9c"
+  ,
+  "printerModel": "320",
+  "type": "printer",
+  "address": "l-15896",
+  "room": "2",
+  "department": "הנהלה",
+  "description": "1",
+  "line": "123",
+  "pag": "1"
+},
+{
+  "_id": "64ff085f41127fe56db7afa2"
+  ,
+  "address": "",
+  "room": "",
+  "department": "הנהלה",
+  "description": "",
+  "printerModel": "",
+  "line": "",
+  "pag": "",
+  "__v": 0
+}
+])
+
+
+
 
 // app.post("/", (req, res, next) => {
 //   console.log(typeof req.body.address);
