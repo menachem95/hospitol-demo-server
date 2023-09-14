@@ -10,7 +10,7 @@ export async function pingFromArray(logs) {
    
 
     let promises = [];
-    let newlogs = [];
+    let newLogs = [];
 
     promises = logs.map(async (log) => {
       return await ping.promise.probe(log.address);
@@ -18,7 +18,7 @@ export async function pingFromArray(logs) {
     let result = await Promise.all(promises);
 
     for (let log of logs) {
-      newlogs.push({
+      newLogs.push({
         printer_id: log._id,
         log: {
           time: getTime(),
@@ -30,18 +30,18 @@ export async function pingFromArray(logs) {
     }
     // ********************************************************************************
     // for (let log of logs) {
-    //   newlogs.push({
+    //   newLogs.push({
     //     ...log,
     //     online: Math.random() > 0.3 ? true : false.alive,
     //   });
     // }
 
-    newlogs.map(log => {
+    newLogs.map(log => {
       const newLog = new Log(log)
       newLog.save();
     })
 
-    return newlogs
+    return newLogs
 
   } catch (err) {
     console.log(err);

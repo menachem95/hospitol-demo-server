@@ -3,20 +3,20 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
+import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
 
 import { Printer } from "./models/printer.js";
 
 import fetchRoutes from "./routes/fetch.js";
-import handelPrinter from "./routes/handelPrinter.js"
-import { pingFromArray } from "./controlers/ping.js"
-
-const MONGODB_URI =
-// `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
- "mongodb+srv://m:ZBpLoaQ6UcHed5ho@cluster0.avjb12c.mongodb.net/hospital"
+import handelPrinter from "./routes/handelPrinter.js";
+import { pingFromArray } from "./controlers/ping.js";
+dotenv.config();
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
+console.log(MONGODB_URI);
 
 app.use((req, res, next) => {
-  
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.options('*', cors());
+app.options("*", cors());
 
 // app.use(cors({
 //   origin: "http://localhost:3000", // Vervang door de juiste oorsprong
@@ -38,47 +38,37 @@ app.options('*', cors());
 
 app.use(bodyParser.json());
 
+// let printers_find = [];
 
-pingFromArray([{
-  "_id": "63bfeec099402acb3849ff9b"
-  ,
-  "printerModel": "320",
-  "type": "printer",
-  "address": "1",
-  "room": "21",
-  "department": "הנהלה",
-  "description": "1",
-  "line": "123",
-  "pag": "1"
-},
-{
-  "_id":  "63bfeec099402acb3849ff9c"
-  ,
-  "printerModel": "320",
-  "type": "printer",
-  "address": "l-15896",
-  "room": "2",
-  "department": "הנהלה",
-  "description": "1",
-  "line": "123",
-  "pag": "1"
-},
-{
-  "_id": "64ff085f41127fe56db7afa2"
-  ,
-  "address": "",
-  "room": "",
-  "department": "הנהלה",
-  "description": "",
-  "printerModel": "",
-  "line": "",
-  "pag": "",
-  "__v": 0
+// const client = await MongoClient.connect(MONGODB_URI);
+// if (!client) {
+//   console.log("!client");
+// }
+// try {
+//   const database = client.db("hospital");
+//   const printers = database.collection("printers");
+//   printers_find = await printers.find().toArray();
+// } catch (err) {
+//   console.log(err);
+// } finally {
+//   client.close();
+// }
+const getPrinters = async () =>{
+  console.log(1111111);
+const printers_find = await Printer.find({})
+console.log(printers_find.length);
+
 }
-])
+
+getPrinters()
 
 
 
+// setInterval(() => {
+//   const currentTime = new Date();
+//   console.log(`Task started at ${currentTime}`);
+//   pingFromArray(printers_find);
+// }, 5 * 60 * 1000);
 
 // app.post("/", (req, res, next) => {
 //   console.log(typeof req.body.address);
@@ -95,8 +85,6 @@ pingFromArray([{
 //   const responseData = await printers.json();
 //   res.json(responseData)
 // });
-
-
 
 // app.post("/ping", async (req, res, next) => {
 //   console.log(req.body)
@@ -133,7 +121,6 @@ pingFromArray([{
 
 app.use(fetchRoutes);
 app.use(handelPrinter);
-
 
 mongoose
   .connect(MONGODB_URI)

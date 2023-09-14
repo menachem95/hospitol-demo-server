@@ -13,10 +13,9 @@ const logsSchema = new Schema({
     type: String,
     // required: true
   },
-  log: {
-    type: [{ time: { type: Object }, isOnline: { type: Boolean } }],
-    // required: true
-  },
+  time: { type: Object },
+  isOnline: { type: Boolean },
+  
 });
 
 export const Log = mongoose.model("log", logsSchema);
