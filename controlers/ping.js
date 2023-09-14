@@ -1,31 +1,26 @@
 import ping from "ping";
 import { MongoClient } from "mongodb";
-import {getTime} from "../utils/utils.js";
+import { getTime } from "../utils/utils.js";
 import { Log } from "../models/log.js";
 
-
-export async function pingFromArray(logs) {
- 
+export async function pingFromArray(printers) {
+  console.log(printers)
   try {
-   
-
     let promises = [];
     let newLogs = [];
 
-    promises = logs.map(async (log) => {
-      return await ping.promise.probe(log.address);
+    promises = printers.map(async (printer) => {
+      return await ping.promise.probe(printer.address);
     });
     let result = await Promise.all(promises);
 
-    for (let log of logs) {
+    for (let printer of printers) {
       newLogs.push({
-        printer_id: log._id,
-        log: {
-          time: getTime(),
-          isOnline: result.find((promise) => promise.inputHost === log.address)
+        printer_id: printer._id,
+        address: printer.address,
+        time: getTime(),
+        isOnline: result.find((promise) => promise.inputHost === printer.address)
           .alive,
-        }
-      
       });
     }
     // ********************************************************************************
@@ -36,15 +31,13 @@ export async function pingFromArray(logs) {
     //   });
     // }
 
-    newLogs.map(log => {
-      const newLog = new Log(log)
+    newLogs.map((log) => {
+      const newLog = new Log(log);
       newLog.save();
-    })
+    });
 
-    return newLogs
-
+    return newLogs;
   } catch (err) {
     console.log(err);
   }
 }
-

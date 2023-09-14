@@ -53,22 +53,21 @@ app.use(bodyParser.json());
 // } finally {
 //   client.close();
 // }
-const getPrinters = async () =>{
-  console.log(1111111);
-const printers_find = await Printer.find({})
-console.log(printers_find.length);
-
-}
-
-getPrinters()
 
 
+// const getPrinters = async () => {
 
-// setInterval(() => {
-//   const currentTime = new Date();
-//   console.log(`Task started at ${currentTime}`);
-//   pingFromArray(printers_find);
-// }, 5 * 60 * 1000);
+//   console.log(printers.length);
+// };
+
+// const printers = getPrinters();
+
+setInterval(async () => {
+  const currentTime = new Date();
+  console.log(`Task started at ${currentTime}`);
+  const printers = await Printer.find({});
+  pingFromArray(printers);
+}, 1 * 60 * 1000);
 
 // app.post("/", (req, res, next) => {
 //   console.log(typeof req.body.address);
