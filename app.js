@@ -4,7 +4,12 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import { MongoClient } from "mongodb";
+import http from "http";
+// import socket from "socket.io";
+import { Server } from "socket.io";
+
+
+
 
 import { Printer } from "./models/printer.js";
 
@@ -14,7 +19,37 @@ import { pingFromArray } from "./controlers/ping.js";
 dotenv.config();
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
-console.log(MONGODB_URI);
+// app.use(bodyParser.json());
+const server = http.createServer(app);
+
+
+const io = new Server(server, {
+  cors: { origin: "*", methods: ["GET", "POST"] },
+});
+
+// const io = socket(server, {
+//   cors: { origin: "*", methods: ["GET", "POST"] },
+// });
+
+const getPrinters = async () =>{
+   const currentTime = new Date();
+  console.log(`Task started at ${currentTime}`);
+  // const printers = await Printer.find({});
+  // pingFromArray(printers);
+ await pingFromArray()
+ const printers = await Printer.find()
+  console.log("printers:", printers)
+  io.emit("send-printers", printers)
+}
+
+setInterval(getPrinters, 0.5 * 60 * 1000);
+ 
+
+
+
+io.on("connection", socket => {
+ 
+})
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -62,13 +97,13 @@ app.use(bodyParser.json());
 
 // const printers = getPrinters();
 
-setInterval(async () => {
-  const currentTime = new Date();
-  console.log(`Task started at ${currentTime}`);
-  // const printers = await Printer.find({});
-  // pingFromArray(printers);
-  pingFromArray()
-}, 1 * 60 * 1000);
+// setInterval(async () => {
+//   const currentTime = new Date();
+//   console.log(`Task started at ${currentTime}`);
+//   // const printers = await Printer.find({});
+//   // pingFromArray(printers);
+//   pingFromArray()
+// }, 1 * 60 * 1000);
 
 // app.post("/", (req, res, next) => {
 //   console.log(typeof req.body.address);
@@ -122,9 +157,25 @@ setInterval(async () => {
 app.use(fetchRoutes);
 app.use(handelPrinter);
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(app.listen(process.env.PORT || 8080))
-  .catch((err) => {
-    console.log(err);
-  });
+
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log("connected to mongoDB!");
+  } catch (error) {
+    throw error;
+  }
+};
+mongoose.connection.on("disconnected", () => {
+  console.log("MongoDB disconnected!");
+});
+mongoose.connection.on("connected", () => {
+  console.log("MongoDB connected!");
+});
+
+server.listen(8080, () => {
+  connectDB();
+  console.log("listening on 8080");
+});
+

@@ -45,7 +45,7 @@ export async function pingFromArray() {
       await Printer.findByIdAndUpdate(log.printer_id, { online: log.online });
     });
 
-    return newLogs;
+    // return newLogs;
   } catch (err) {
     console.log(err);
   }
