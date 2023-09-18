@@ -48,7 +48,8 @@ export async function fetchPrinters(req, res, next) {
 
     console.log("end");
 
-    res.json(newPrinters);
+    // res.json(newPrinters);
+  res.json(printers_find)
   } catch (err) {
     console.log(err);
   } finally {

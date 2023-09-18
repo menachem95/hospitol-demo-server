@@ -32,6 +32,7 @@ const printersSchema = new Schema({
         type: String,
         // required: true
     },
+    online: {type: Boolean, default: false}
 });
 
 

@@ -65,8 +65,9 @@ app.use(bodyParser.json());
 setInterval(async () => {
   const currentTime = new Date();
   console.log(`Task started at ${currentTime}`);
-  const printers = await Printer.find({});
-  pingFromArray(printers);
+  // const printers = await Printer.find({});
+  // pingFromArray(printers);
+  pingFromArray()
 }, 1 * 60 * 1000);
 
 // app.post("/", (req, res, next) => {

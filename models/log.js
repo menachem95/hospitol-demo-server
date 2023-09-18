@@ -14,7 +14,7 @@ const logsSchema = new Schema({
     // required: true
   },
   time: { type: Object },
-  isOnline: { type: Boolean },
+  online: { type: Boolean, default: false },
   
 });
 
