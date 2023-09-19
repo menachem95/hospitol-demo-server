@@ -22,6 +22,8 @@ const app = express();
 // app.use(bodyParser.json());
 const server = http.createServer(app);
 
+let time = new Date;
+
 
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
@@ -32,8 +34,9 @@ const io = new Server(server, {
 // });
 
 const getPrinters = async () =>{
-   const currentTime = new Date();
-  console.log(`Task started at ${currentTime}`);
+  //  const currentTime = new Date();
+  time = new Date().toLocaleTimeString();
+  console.log(`Task started at ${time}`);
   // const printers = await Printer.find({});
   // pingFromArray(printers);
  await pingFromArray()
@@ -48,6 +51,10 @@ setInterval(getPrinters, 0.5 * 60 * 1000);
 
 
 io.on("connection", socket => {
+  socket.on("refresh", async (cb)=>{
+    const printers = await Printer.find()
+    cb(printers, time);
+  })
  
 })
 
