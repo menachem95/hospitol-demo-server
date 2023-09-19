@@ -8,55 +8,39 @@ import http from "http";
 // import socket from "socket.io";
 import { Server } from "socket.io";
 
-
-
-
 import { Printer } from "./models/printer.js";
 
 import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js";
-import { pingFromArray } from "./controlers/ping.js";
+import { checkPrintersNetwork } from "./controlers/ping.js";
 dotenv.config();
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
 // app.use(bodyParser.json());
 const server = http.createServer(app);
 
-let time = new Date;
-
-
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
-// const io = socket(server, {
-//   cors: { origin: "*", methods: ["GET", "POST"] },
-// });
-
-const getPrinters = async () =>{
-  //  const currentTime = new Date();
-  time = new Date().toLocaleTimeString();
+const getPrinters = async () => {
+  const time = new Date().toLocaleTimeString();
   console.log(`Task started at ${time}`);
-  // const printers = await Printer.find({});
-  // pingFromArray(printers);
- await pingFromArray()
- const printers = await Printer.find()
-  console.log("printers:", printers)
-  io.emit("send-printers", printers)
-}
+  await checkPrintersNetwork();
+  const printers = await Printer.find();
+  console.log("printers:", printers);
+  io.emit("send-printers", printers);
+};
 
-setInterval(getPrinters, 0.5 * 60 * 1000);
- 
+// const interval = setInterval(getPrinters, 0.5 * 60 * 1000);
 
+io.on("connection", (socket) => {
+  socket.on("refresh", async (cb) => {
+    const printers = await checkPrintersNetwork(true);
 
-
-io.on("connection", socket => {
-  socket.on("refresh", async (cb)=>{
-    const printers = await Printer.find()
-    cb(printers, time);
-  })
- 
-})
+    cb(printers);
+  });
+});
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -96,7 +80,6 @@ app.use(bodyParser.json());
 //   client.close();
 // }
 
-
 // const getPrinters = async () => {
 
 //   console.log(printers.length);
@@ -108,8 +91,8 @@ app.use(bodyParser.json());
 //   const currentTime = new Date();
 //   console.log(`Task started at ${currentTime}`);
 //   // const printers = await Printer.find({});
-//   // pingFromArray(printers);
-//   pingFromArray()
+//   // checkPrintersNetwork(printers);
+//   checkPrintersNetwork()
 // }, 1 * 60 * 1000);
 
 // app.post("/", (req, res, next) => {
@@ -164,8 +147,6 @@ app.use(bodyParser.json());
 app.use(fetchRoutes);
 app.use(handelPrinter);
 
-
-
 const connectDB = async () => {
   try {
     await mongoose.connect(MONGODB_URI);
@@ -185,4 +166,3 @@ server.listen(8080, () => {
   connectDB();
   console.log("listening on 8080");
 });
-
