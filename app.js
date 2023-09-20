@@ -23,22 +23,23 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
+let printers = []
+
 const getPrinters = async () => {
   const time = new Date().toLocaleTimeString();
   console.log(`Task started at ${time}`);
-  await checkPrintersNetwork();
-  const printers = await Printer.find();
-  console.log("printers:", printers);
-  io.emit("send-printers", printers);
+  printers = await checkPrintersNetwork();
+  io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
 };
 
-// const interval = setInterval(getPrinters, 0.5 * 60 * 1000);
+// const interval = 
+setInterval(getPrinters, 0.5 * 60 * 1000);
 
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
     const printers = await checkPrintersNetwork(true);
 
-    cb(printers);
+    cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
 });
 

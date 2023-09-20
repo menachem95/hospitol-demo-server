@@ -23,8 +23,8 @@ export async function checkPrintersNetwork(isRefresh) {
         tempPrinters.push({
           ...printer._doc,
           online: 
-          // result.find((promise) => promise.inputHost === printer.address).alive,
-          Math.random() > 0.3 ? true : false.alive,
+          result.find((promise) => promise.inputHost === printer.address).alive ? true : false,
+          // Math.random() > 0.3 ? true : false,
         });
       }
 
@@ -37,8 +37,8 @@ export async function checkPrintersNetwork(isRefresh) {
           address: printer.address,
           time: getTime(),
           online: 
-          // result.find((promise) => promise.inputHost === printer.address).alive,
-          Math.random() > 0.3 ? true : false.alive,
+          result.find((promise) => promise.inputHost === printer.address).alive ? true : false,
+          // Math.random() > 0.3 ? true : false,
         });
       }
       // ********************************************************************************
