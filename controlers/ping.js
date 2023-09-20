@@ -6,7 +6,8 @@ import { Printer } from "../models/printer.js";
 
 export async function checkPrintersNetwork(isRefresh) {
   const printers = await Printer.find({});
-  console.log(printers);
+  // console.log(printers);
+  console.log(new Date().toLocaleString().split(" ")[1])
   try {
     let promises = [];
     let newLogs = [];
