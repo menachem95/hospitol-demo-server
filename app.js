@@ -42,12 +42,13 @@ io.on("connection", (socket) => {
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (printer, event) => {
-    const online = await ping.promise.probe(printer?.address).alive;
+    const online = await ping.promise.probe(printer.address).alive ? true : false;
+    console.log("online:", online)
     let newPrinter;
     if (event === "update") {
       newPrinter = await Printer.findByIdAndUpdate(
         printer._id,
-        { ...printer, online },
+        {...printer, online},
         {
           new: true,
         }
