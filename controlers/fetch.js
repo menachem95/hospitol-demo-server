@@ -42,7 +42,7 @@ export async function fetchPrinters(req, res, next) {
     for (let printer of printers_find) {
       newPrinters.push({
         ...printer,
-        online: Math.random() > 0.3 ? true : false.alive,
+        online: Math.random() > 0.3 ? true : false,
       });
     }
 

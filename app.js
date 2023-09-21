@@ -41,8 +41,17 @@ io.on("connection", (socket) => {
 
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
-  socket.on("update-printres", (printer, event) => {
-    io.emit("update-printres", printer, event);
+  socket.on("update-printres", async (printer, event) => {
+    const online = await ping.promise.probe(printer.address).alive;
+    const newPrinter = await Printer.findByIdAndUpdate(
+      printer._id,
+      { ...printer, online },
+      {
+        new: true,
+      }
+    );
+    console.log("newPrinter:", newPrinter)
+    io.emit("update-printres", newPrinter, event);
   });
 });
 
