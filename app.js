@@ -12,7 +12,10 @@ import { Printer } from "./models/printer.js";
 
 import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js";
-import { checkPrintersNetwork } from "./controlers/ping.js";
+import {
+  checkPrintersNetwork,
+  checkOnePrinterNetwork,
+} from "./controlers/ping.js";
 dotenv.config();
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
@@ -42,19 +45,21 @@ io.on("connection", (socket) => {
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (printer, event) => {
-    const online = await ping.promise.probe(printer.address).alive ? true : false;
-    console.log("online:", online)
+    // const online = ping.sys.probe(printer.address) ? true : false;
+    const online = await checkOnePrinterNetwork(printer.address);
+
+    console.log("online:", online);
     let newPrinter;
     if (event === "update") {
       newPrinter = await Printer.findByIdAndUpdate(
         printer._id,
-        {...printer, online},
+        { ...printer, online },
         {
           new: true,
         }
       );
     } else if (event === "add") {
-      newPrinter = await Printer.create({...printer, online});
+      newPrinter = await Printer.create({ ...printer, online });
     }
 
     console.log("newPrinter:", newPrinter);

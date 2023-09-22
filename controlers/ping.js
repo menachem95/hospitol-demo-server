@@ -7,7 +7,7 @@ import { Printer } from "../models/printer.js";
 export async function checkPrintersNetwork(isRefresh) {
   const printers = await Printer.find({});
   // console.log(printers);
-  console.log(new Date().toLocaleString().split(" ")[1])
+  console.log(new Date().toLocaleString().split(" ")[1]);
   try {
     let promises = [];
     let newLogs = [];
@@ -18,13 +18,15 @@ export async function checkPrintersNetwork(isRefresh) {
     let result = await Promise.all(promises);
 
     if (isRefresh) {
-     
       let tempPrinters = [];
       for (let printer of printers) {
         tempPrinters.push({
           ...printer._doc,
-          online: 
-          result.find((promise) => promise.inputHost === printer.address).alive ? true : false,
+          online: result.find(
+            (promise) => promise.inputHost === printer.address
+          ).alive
+            ? true
+            : false,
           // Math.random() > 0.3 ? true : false,
         });
       }
@@ -37,8 +39,11 @@ export async function checkPrintersNetwork(isRefresh) {
           printer_id: printer._id,
           address: printer.address,
           time: getTime(),
-          online: 
-          result.find((promise) => promise.inputHost === printer.address).alive ? true : false,
+          online: result.find(
+            (promise) => promise.inputHost === printer.address
+          ).alive
+            ? true
+            : false,
           // Math.random() > 0.3 ? true : false,
         });
       }
@@ -66,5 +71,25 @@ export async function checkPrintersNetwork(isRefresh) {
     }
   } catch (err) {
     console.log(err);
+  }
+}
+
+function isPrinterOnline(address) {
+  return new Promise((resolve, reject) => {
+    ping.sys.probe(address, function (isAlive) {
+      resolve(isAlive);
+    });
+  });
+}
+
+export async function checkOnePrinterNetwork(address) {
+  {
+    try {
+      const isOnline = await isPrinterOnline(address);
+      return isOnline;
+    } catch (error) {
+      console.error("Error checking printer status:", error);
+      return false;
+    }
   }
 }
