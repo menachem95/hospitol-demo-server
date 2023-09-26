@@ -16,6 +16,7 @@ import {
   checkPrintersNetwork,
   checkOnePrinterNetwork,
 } from "./controlers/ping.js";
+import { Log } from "./models/log.js";
 dotenv.config();
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
@@ -36,7 +37,7 @@ const getPrinters = async () => {
 };
 
 // const interval =
-setInterval(getPrinters, 0.5 * 60 * 1000);
+setInterval(getPrinters, 5 * 60 * 1000);
 
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
@@ -45,10 +46,14 @@ io.on("connection", (socket) => {
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (printer, event) => {
-    // const online = ping.sys.probe(printer.address) ? true : false;
-    const online = await checkOnePrinterNetwork(printer.address);
+    let online;
+    if (event === "delete") {
+      await Printer.findByIdAndDelete(printer._id);
+    } else {
+      online = await checkOnePrinterNetwork(printer.address);
+    }
 
-    console.log("online:", online);
+
     let newPrinter;
     if (event === "update") {
       newPrinter = await Printer.findByIdAndUpdate(
