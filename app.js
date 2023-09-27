@@ -70,6 +70,10 @@ io.on("connection", (socket) => {
     console.log("newPrinter:", newPrinter);
     io.emit("update-printres",event , newPrinter);
   });
+  socket.on("onePing", async (printer) => {
+    const online = await checkOnePrinterNetwork(printer.address);
+    io.emit("update-printres","update" , {...printer, online});
+  })
 });
 
 app.use((req, res, next) => {

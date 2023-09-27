@@ -31,7 +31,7 @@ export async function checkPrintersNetwork(isRefresh) {
         });
       }
 
-      console.log("tempPrinters:", tempPrinters);
+      // console.log("tempPrinters:", tempPrinters);
       return tempPrinters;
     } else {
       for (let printer of printers) {
@@ -64,7 +64,7 @@ export async function checkPrintersNetwork(isRefresh) {
       });
 
       newLogs.map(async (log) => {
-        console.log(log);
+        // console.log(log);
         await Printer.findByIdAndUpdate(log.printer_id, { online: log.online });
       });
       return await Printer.find();
@@ -80,6 +80,7 @@ function isPrinterOnline(address) {
       resolve(isAlive);
     });
   });
+  // return false;
 }
 
 export async function checkOnePrinterNetwork(address) {
