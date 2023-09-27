@@ -45,16 +45,16 @@ io.on("connection", (socket) => {
 
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
-  socket.on("update-printres", async (printer, event) => {
+  socket.on("update-printres", async (event,  printer) => {
     let online;
+    let newPrinter = {...printer}
+    console.log("printer: ", printer)
     if (event === "delete") {
       await Printer.findByIdAndDelete(printer._id);
     } else {
       online = await checkOnePrinterNetwork(printer.address);
     }
-
-
-    let newPrinter;
+    
     if (event === "update") {
       newPrinter = await Printer.findByIdAndUpdate(
         printer._id,
@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
     }
 
     console.log("newPrinter:", newPrinter);
-    io.emit("update-printres", newPrinter, event);
+    io.emit("update-printres",event , newPrinter);
   });
 });
 
