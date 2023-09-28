@@ -8,10 +8,13 @@ import http from "http";
 // import socket from "socket.io";
 import { Server } from "socket.io";
 
+
 import { Printer } from "./models/printer.js";
 
+import logRoutes from "./routes/logRoutes.js";
 import fetchRoutes from "./routes/fetch.js";
 import handelPrinter from "./routes/handelPrinter.js";
+
 import {
   checkPrintersNetwork,
   checkOnePrinterNetwork,
@@ -36,8 +39,7 @@ const getPrinters = async () => {
   io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
 };
 
-// const interval =
-setInterval(getPrinters, 5 * 60 * 1000);
+setInterval(getPrinters, 0.5 * 60 * 1000);
 
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
@@ -45,16 +47,16 @@ io.on("connection", (socket) => {
 
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
-  socket.on("update-printres", async (event,  printer) => {
+  socket.on("update-printres", async (event, printer) => {
     let online;
-    let newPrinter = {...printer}
-    console.log("printer: ", printer)
+    let newPrinter = { ...printer };
+    console.log("printer: ", printer);
     if (event === "delete") {
       await Printer.findByIdAndDelete(printer._id);
     } else {
       online = await checkOnePrinterNetwork(printer.address);
     }
-    
+
     if (event === "update") {
       newPrinter = await Printer.findByIdAndUpdate(
         printer._id,
@@ -68,12 +70,12 @@ io.on("connection", (socket) => {
     }
 
     console.log("newPrinter:", newPrinter);
-    io.emit("update-printres",event , newPrinter);
+    io.emit("update-printres", event, newPrinter);
   });
   socket.on("onePing", async (printer) => {
     const online = await checkOnePrinterNetwork(printer.address);
-    io.emit("update-printres","update" , {...printer, online});
-  })
+    io.emit("update-printres", "update", { ...printer, online });
+  });
 });
 
 app.use((req, res, next) => {
@@ -178,6 +180,7 @@ app.use(bodyParser.json());
 //   res.json(newPrinters);
 // });
 
+app.use(logRoutes)
 app.use(fetchRoutes);
 app.use(handelPrinter);
 
