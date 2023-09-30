@@ -22,12 +22,13 @@ export async function checkPrintersNetwork(isRefresh) {
       for (let printer of printers) {
         tempPrinters.push({
           ...printer._doc,
-          online: result.find(
-            (promise) => promise.inputHost === printer.address
-          ).alive
-            ? true
-            : false,
-          // Math.random() > 0.3 ? true : false,
+          online: 
+          // result.find(
+          //   (promise) => promise.inputHost === printer.address
+          // ).alive
+          //   ? true
+          //   : false,
+          Math.random() > 0.3 ? true : false,
         });
       }
 
@@ -39,12 +40,13 @@ export async function checkPrintersNetwork(isRefresh) {
           printer_id: printer._id,
           address: printer.address,
           time: getTime(),
-          online: result.find(
-            (promise) => promise.inputHost === printer.address
-          ).alive
-            ? true
-            : false,
-          // Math.random() > 0.3 ? true : false,
+          online:
+          //  result.find(
+          //   (promise) => promise.inputHost === printer.address
+          // ).alive
+          //   ? true
+          //   : false,
+          Math.random() > 0.3 ? true : false,
         });
       }
       // ********************************************************************************

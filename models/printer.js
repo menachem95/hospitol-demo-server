@@ -32,7 +32,7 @@ const printersSchema = new Schema({
     // required: true
   },
   online: { type: Boolean, default: false },
-  favorite: { type: Boolean, default: false},
+  isFavorite: { type: Boolean, default: false},
 });
 
 export const Printer = mongoose.model("Printer", printersSchema);
