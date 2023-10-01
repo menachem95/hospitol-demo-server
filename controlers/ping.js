@@ -77,12 +77,12 @@ export async function checkPrintersNetwork(isRefresh) {
 }
 
 function isPrinterOnline(address) {
-  return new Promise((resolve, reject) => {
-    ping.sys.probe(address, function (isAlive) {
-      resolve(isAlive);
-    });
-  });
-  // return false;
+  // return new Promise((resolve, reject) => {
+  //   ping.sys.probe(address, function (isAlive) {
+  //     resolve(isAlive);
+  //   });
+  // });
+  return false;
 }
 
 export async function checkOnePrinterNetwork(address) {

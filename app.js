@@ -47,13 +47,13 @@ io.on("connection", (socket) => {
 
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
-  socket.on("update-printres", async (event, printer) => {
-    let online;
+  socket.on("update-printres", async (event, printer, checkPing=true) => {
+    let online = printer.online;
     let newPrinter = { ...printer };
     console.log("printer: ", printer);
     if (event === "delete") {
       await Printer.findByIdAndDelete(printer._id);
-    } else {
+    } else if (checkPing) {
       online = await checkOnePrinterNetwork(printer.address);
     }
 
