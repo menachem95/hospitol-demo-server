@@ -8,7 +8,6 @@ import http from "http";
 // import socket from "socket.io";
 import { Server } from "socket.io";
 
-
 import { Printer } from "./models/printer.js";
 
 import logRoutes from "./routes/logRoutes.js";
@@ -39,7 +38,48 @@ const getPrinters = async () => {
   io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
 };
 
-setInterval(getPrinters, 0.5 * 60 * 1000);
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
+app.options("*", cors());
+
+// app.use(cors({
+//   origin: "http://localhost:3000", // Vervang door de juiste oorsprong
+//   methods: "GET, POST, PUT, DELETE, OPTIONS", // Vervang door de toegestane methoden
+//   allowedHeaders: "Content-Type", // Vervang door de toegestane headers
+//   credentials: true, // Schakel cookies en verificatie in indien nodig
+//   optionsSuccessStatus: 200
+// }));
+
+app.use(bodyParser.json());
+
+let intervalMinutes = 0.5;
+
+let intervalId;
+const startInterval = () => {
+  if (intervalId) clearInterval(intervalId);
+  intervalId = setInterval(() => {
+    console.log("intervalMinutes:", intervalMinutes);
+    getPrinters();
+  }, intervalMinutes * 60 * 1000);
+};
+
+startInterval();
+
+app.post("/setinterval", (req, res) => {
+  intervalMinutes = req.body.intervalMinutes;
+  startInterval();
+  res
+    .status(200)
+    .json({ intervalMinutes, message: "Interval set successfully." });
+});
 
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
@@ -47,7 +87,7 @@ io.on("connection", (socket) => {
 
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
-  socket.on("update-printres", async (event, printer, checkPing=true) => {
+  socket.on("update-printres", async (event, printer, checkPing = true) => {
     let online = printer.online;
     let newPrinter = { ...printer };
     console.log("printer: ", printer);
@@ -77,28 +117,6 @@ io.on("connection", (socket) => {
     io.emit("update-printres", "update", { ...printer, online });
   });
 });
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
-app.options("*", cors());
-
-// app.use(cors({
-//   origin: "http://localhost:3000", // Vervang door de juiste oorsprong
-//   methods: "GET, POST, PUT, DELETE, OPTIONS", // Vervang door de toegestane methoden
-//   allowedHeaders: "Content-Type", // Vervang door de toegestane headers
-//   credentials: true, // Schakel cookies en verificatie in indien nodig
-//   optionsSuccessStatus: 200
-// }));
-
-app.use(bodyParser.json());
 
 // let printers_find = [];
 
@@ -180,7 +198,7 @@ app.use(bodyParser.json());
 //   res.json(newPrinters);
 // });
 
-app.use(logRoutes)
+app.use(logRoutes);
 app.use(fetchRoutes);
 app.use(handelPrinter);
 
