@@ -62,6 +62,7 @@ app.use(bodyParser.json());
 
 let intervalMinutes = 0.5;
 
+
 let intervalId;
 const startInterval = () => {
   if (intervalId) clearInterval(intervalId);
@@ -75,12 +76,19 @@ startInterval();
 
 app.post("/setinterval", (req, res) => {
   intervalMinutes = req.body.intervalMinutes;
-  console.log("get new interval: ", intervalMinutes)
-  
+  console.log("get new interval: ", intervalMinutes);
+
   res
     .status(200)
-    .json({ intervalMinutes, message: `Interval set successfully. ${intervalMinutes}` });
-startInterval();
+    .json({
+      intervalMinutes,
+      message: `Interval set successfully. ${intervalMinutes}`,
+    });
+  startInterval();
+});
+
+app.get("/server-confing", (req, res) => {
+  res.json({ intervalMinutes });
 });
 
 io.on("connection", (socket) => {
