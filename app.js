@@ -75,10 +75,12 @@ startInterval();
 
 app.post("/setinterval", (req, res) => {
   intervalMinutes = req.body.intervalMinutes;
-  startInterval();
+  console.log("get new interval: ", intervalMinutes)
+  
   res
     .status(200)
-    .json({ intervalMinutes, message: "Interval set successfully." });
+    .json({ intervalMinutes, message: `Interval set successfully. ${intervalMinutes}` });
+startInterval();
 });
 
 io.on("connection", (socket) => {

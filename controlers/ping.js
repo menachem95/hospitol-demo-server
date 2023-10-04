@@ -7,15 +7,17 @@ import { Printer } from "../models/printer.js";
 export async function checkPrintersNetwork(isRefresh) {
   const printers = await Printer.find({});
   // console.log(printers);
-  console.log(new Date().toLocaleString().split(" ")[1]);
+  // console.log(new Date().toLocaleString().split(" ")[1]);
   try {
     let promises = [];
     let newLogs = [];
+
 
     promises = printers.map(async (printer) => {
       return await ping.promise.probe(printer.address);
     });
     let result = await Promise.all(promises);
+
 
     if (isRefresh) {
       let tempPrinters = [];
