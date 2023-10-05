@@ -11,7 +11,7 @@ const logsSchema = new Schema(
     },
     printer_id: {
       type: ObjectId,
-      ref: "printer",
+      ref: "Printer",
       // required: true
     },
     address: {

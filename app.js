@@ -25,6 +25,7 @@ const app = express();
 // app.use(bodyParser.json());
 const server = http.createServer(app);
 
+
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
@@ -208,6 +209,7 @@ io.on("connection", (socket) => {
 //   res.json(newPrinters);
 // });
 
+
 app.use(logRoutes);
 app.use(fetchRoutes);
 app.use(handelPrinter);
@@ -220,6 +222,7 @@ const connectDB = async () => {
     throw error;
   }
 };
+mongoose.set('strictQuery', false);
 mongoose.connection.on("disconnected", () => {
   console.log("MongoDB disconnected!");
 });
