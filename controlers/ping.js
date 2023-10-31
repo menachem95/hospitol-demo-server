@@ -30,7 +30,7 @@ export async function checkPrintersNetwork(isRefresh) {
           // ).alive
           //   ? true
           //   : false,
-          Math.random() > 0.3 ? true : false,
+          Math.random() > 0.2 ? true : false,
         });
       }
 
@@ -42,13 +42,14 @@ export async function checkPrintersNetwork(isRefresh) {
           printer_id: printer._id,
           address: printer.address,
           time: getTime(),
+          date: new Date().toISOString(),
           online:
           //  result.find(
           //   (promise) => promise.inputHost === printer.address
           // ).alive
           //   ? true
           //   : false,
-          Math.random() > 0.3 ? true : false,
+          Math.random() > 0.2 ? true : false,
         });
       }
       // ********************************************************************************
@@ -84,7 +85,7 @@ function isPrinterOnline(address) {
   //     resolve(isAlive);
   //   });
   // });
-  return false;
+  return Math.random() > 0.2 ? true : false;
 }
 
 export async function checkOnePrinterNetwork(address) {

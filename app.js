@@ -61,8 +61,7 @@ app.options("*", cors());
 
 app.use(bodyParser.json());
 
-let intervalMinutes = 0.5;
-
+let intervalMinutes = 5;
 
 let intervalId;
 const startInterval = () => {

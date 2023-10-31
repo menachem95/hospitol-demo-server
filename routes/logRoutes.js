@@ -3,7 +3,7 @@ import { getPrinterLogs } from "../controlers/logControler.js";
 
 const router = Router();
 
-router.get("/logs/onePrinter/:printer", getPrinterLogs);
+router.get("/logs/onePrinter/:printer/:start/:end", getPrinterLogs);
 
 
 
