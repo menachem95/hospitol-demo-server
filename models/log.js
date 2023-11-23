@@ -14,6 +14,7 @@ const logsSchema = new Schema(
       ref: "Printer",
       // required: true
     },
+  
     address: {
       type: String,
       // required: true

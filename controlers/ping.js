@@ -1,6 +1,6 @@
 import ping from "ping";
 import { MongoClient } from "mongodb";
-import { getTime } from "../utils/utils.js";
+// import { getTime } from "../utils/utils.js";
 import { Log } from "../models/log.js";
 import { Printer } from "../models/printer.js";
 
@@ -17,7 +17,6 @@ export async function checkPrintersNetwork(isRefresh) {
       return await ping.promise.probe(printer.address);
     });
     let result = await Promise.all(promises);
-
 
     if (isRefresh) {
       let tempPrinters = [];
@@ -38,12 +37,14 @@ export async function checkPrintersNetwork(isRefresh) {
       return tempPrinters;
     } else {
       for (let printer of printers) {
+        let date = new Date().getTime() + 2 * 60 * 60 * 1000
+        
         newLogs.push({
           printer_id: printer._id,
           address: printer.address,
-          time: getTime(),
-          date: new Date().toISOString(),
-          online:
+          // time: getTime(),
+          date,//.substring(0, 16),
+          online: 
           //  result.find(
           //   (promise) => promise.inputHost === printer.address
           // ).alive
@@ -67,6 +68,8 @@ export async function checkPrintersNetwork(isRefresh) {
         const newLog = new Log(log);
         newLog.save();
       });
+
+
 
       newLogs.map(async (log) => {
         // console.log(log);
@@ -99,3 +102,4 @@ export async function checkOnePrinterNetwork(address) {
     }
   }
 }
+

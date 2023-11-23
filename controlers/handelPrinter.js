@@ -3,7 +3,6 @@ import { Printer } from "../models/printer.js";
 
 export const addPrinter = (req, res, next) => {
 
-  
  
   // const room = req.body.room;
   // const address = req.body.address;
