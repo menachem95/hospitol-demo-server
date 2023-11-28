@@ -7,7 +7,7 @@ const logsSchema = new Schema(
   {
     date: {
       type: Date,
-      // default: Date.now,
+      //  default: Date.now,
     },
     printer_id: {
       type: ObjectId,
@@ -19,7 +19,7 @@ const logsSchema = new Schema(
       type: String,
       // required: true
     },
-    time: { type: Object },
+    // time: { type: Object },
     online: { type: Boolean, default: false },
   }
   // {

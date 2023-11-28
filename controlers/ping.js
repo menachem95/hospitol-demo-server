@@ -37,7 +37,8 @@ export async function checkPrintersNetwork(isRefresh) {
       return tempPrinters;
     } else {
       for (let printer of printers) {
-        let date = new Date().getTime() + 2 * 60 * 60 * 1000
+        let date = new Date()//.toLocaleTimeString();//.getTime() + 2 * 60 * 60 * 1000
+        // console.log(date)
         
         newLogs.push({
           printer_id: printer._id,

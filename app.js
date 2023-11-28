@@ -19,6 +19,7 @@ import {
   checkOnePrinterNetwork,
 } from "./controlers/ping.js";
 import { Log } from "./models/log.js";
+// process.env.TZ = 'Europe/Jerusalem';
 dotenv.config();
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
