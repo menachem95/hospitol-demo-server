@@ -2,10 +2,12 @@ import ping from "ping";
 import { Log } from "../models/log.js";
 import { Printer } from "../models/printer.js";
 
+
 export async function checkPrintersNetwork({
   SIMULATION_MODE,
   isRefresh = false,
 }) {
+  console.log("isRefresh", isRefresh)
   const printers = await Printer.find({});
   try {
     let promises = [];

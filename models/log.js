@@ -14,11 +14,12 @@ const logsSchema = new Schema(
       ref: "Printer",
       // required: true
     },
-  
+    isRefresh: { type: Boolean, default: false },
     address: {
       type: String,
       // required: true
     },
+
     // time: { type: Object },
     online: { type: Boolean, default: false },
   }
