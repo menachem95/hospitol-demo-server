@@ -1,11 +1,9 @@
-import ping from "ping";
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
-// import socket from "socket.io";
 import { Server } from "socket.io";
 
 import { Printer } from "./models/printer.js";
@@ -17,15 +15,15 @@ import handelPrinter from "./routes/handelPrinter.js";
 import {
   checkPrintersNetwork,
   checkOnePrinterNetwork,
-} from "./controlers/ping.js";
+} from "./controlers/pingControler.js";
 import { Log } from "./models/log.js";
 // process.env.TZ = 'Europe/Jerusalem';
 dotenv.config();
+const SIMULATION_MODE = Boolean(process.env.SIMULATION_MODE)
+console.log("SIMULATION_MODE:", SIMULATION_MODE)
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
-// app.use(bodyParser.json());
 const server = http.createServer(app);
-
 
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
@@ -36,7 +34,7 @@ let printers = [];
 const getPrinters = async () => {
   const time = new Date().toLocaleTimeString();
   console.log(`Task started at ${time}`);
-  printers = await checkPrintersNetwork();
+  printers = await checkPrintersNetwork({SIMULATION_MODE});
   io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
 };
 
@@ -79,12 +77,10 @@ app.post("/setinterval", (req, res) => {
   intervalMinutes = req.body.intervalMinutes;
   console.log("get new interval: ", intervalMinutes);
 
-  res
-    .status(200)
-    .json({
-      intervalMinutes,
-      message: `Interval set successfully. ${intervalMinutes}`,
-    });
+  res.status(200).json({
+    intervalMinutes,
+    message: `Interval set successfully. ${intervalMinutes}`,
+  });
   startInterval();
 });
 
@@ -94,18 +90,19 @@ app.get("/server-confing", (req, res) => {
 
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
-    const printers = await checkPrintersNetwork(true);
+    const printers = await checkPrintersNetwork({SIMULATION_MODE, isRefresh: true});
 
     cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (event, printer, checkPing = true) => {
     let online = printer.online;
+    const address = printer.address;
     let newPrinter = { ...printer };
     console.log("printer: ", printer);
     if (event === "delete") {
       await Printer.findByIdAndDelete(printer._id);
     } else if (checkPing) {
-      online = await checkOnePrinterNetwork(printer.address);
+      online = await checkOnePrinterNetwork({SIMULATION_MODE, address});
     }
 
     if (event === "update") {
@@ -124,91 +121,10 @@ io.on("connection", (socket) => {
     io.emit("update-printres", event, newPrinter);
   });
   socket.on("onePing", async (printer) => {
-    const online = await checkOnePrinterNetwork(printer.address);
+    const online = await checkOnePrinterNetwork({SIMULATION_MODE, address: printer.address});
     io.emit("update-printres", "update", { ...printer, online });
   });
 });
-
-// let printers_find = [];
-
-// const client = await MongoClient.connect(MONGODB_URI);
-// if (!client) {
-//   console.log("!client");
-// }
-// try {
-//   const database = client.db("hospital");
-//   const printers = database.collection("printers");
-//   printers_find = await printers.find().toArray();
-// } catch (err) {
-//   console.log(err);
-// } finally {
-//   client.close();
-// }
-
-// const getPrinters = async () => {
-
-//   console.log(printers.length);
-// };
-
-// const printers = getPrinters();
-
-// setInterval(async () => {
-//   const currentTime = new Date();
-//   console.log(`Task started at ${currentTime}`);
-//   // const printers = await Printer.find({});
-//   // checkPrintersNetwork(printers);
-//   checkPrintersNetwork()
-// }, 1 * 60 * 1000);
-
-// app.post("/", (req, res, next) => {
-//   console.log(typeof req.body.address);
-//   ping.sys.probe(req.body.address, (isAlive) => {
-//     res.json({ address: req.body.address, online: isAlive });
-//   });
-// });
-
-// app.get("/fetch-printers", async (req, res, next) => {
-//   const printers = await fetch(
-//     "https://react-http-d33b4-default-rtdb.firebaseio.com/printers.json"
-//   );
-
-//   const responseData = await printers.json();
-//   res.json(responseData)
-// });
-
-// app.post("/ping", async (req, res, next) => {
-//   console.log(req.body)
-//   const printers = req.body;
-//   let promises = [];
-//   let newPrinters = [];
-
-//   promises = printers.map(async (printer) => {
-//     return await ping.promise.probe(printer.address);
-//   });
-//   let result = await Promise.all(promises);
-
-//   // for (let printer of printers) {
-//   //   newPrinters.push({
-//   //     address: printer.address,
-//   //     type: printer.type,
-//   //     online: result.find((promise) => promise.inputHost === printer.address)
-//   //       .alive,
-//   //   });
-//   // }
-
-//   for (let printer of printers) {
-//     newPrinters.push({
-//       address: printer.address,
-//       type: printer.type,
-//       online: Math.random() > 0.3 ? true : false
-//         .alive,
-//     });
-//   }
-
-//   console.log(newPrinters);
-//   res.json(newPrinters);
-// });
-
 
 app.use(logRoutes);
 app.use(fetchRoutes);
@@ -222,7 +138,7 @@ const connectDB = async () => {
     throw error;
   }
 };
-mongoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 mongoose.connection.on("disconnected", () => {
   console.log("MongoDB disconnected!");
 });
