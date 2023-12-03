@@ -2,12 +2,11 @@ import ping from "ping";
 import { Log } from "../models/log.js";
 import { Printer } from "../models/printer.js";
 
-
 export async function checkPrintersNetwork({
   SIMULATION_MODE,
   isRefresh = false,
 }) {
-  console.log("isRefresh", isRefresh)
+  console.log("isRefresh", isRefresh);
   const printers = await Printer.find({});
   try {
     let promises = [];
@@ -39,8 +38,7 @@ export async function checkPrintersNetwork({
     }
 
     newLogs.map((log) => {
-      const newLog = new Log(log);
-      newLog.save();
+      new Log(log).save();
     });
 
     newLogs.map(async (log) => {
@@ -58,18 +56,20 @@ function isPrinterOnline(address) {
       resolve(isAlive);
     });
   });
- 
 }
 
-export async function checkOnePrinterNetwork({SIMULATION_MODE, address}) {
-  if (SIMULATION_MODE)  return Math.random() > 0.2 ? true : false;
+export async function checkOnePrinterNetwork({ SIMULATION_MODE, printer }) {
+  const { _id, address } = printer;
   {
     try {
-      const isOnline = await isPrinterOnline(address);
-      return isOnline;
+      const online = SIMULATION_MODE ? Math.random() > 0.2 ? true : false : await isPrinterOnline(address);
+      let date = new Date();
+     new Log({ online, address, date, isRefresh: true, printer_id: _id }).save();
+      return online;
     } catch (error) {
       console.error("Error checking printer status:", error);
       return false;
     }
   }
 }
+
