@@ -62,9 +62,13 @@ app.use(bodyParser.json());
 
 let intervalMinutes = 5;
 
+let lastFunctionCallTime = new Date();
+
+
 let intervalId;
 const startInterval = () => {
   if (intervalId) clearInterval(intervalId);
+  lastFunctionCallTime = new Date();
   intervalId = setInterval(() => {
     console.log("intervalMinutes:", intervalMinutes);
     getPrinters();
@@ -90,9 +94,18 @@ app.get("/server-confing", (req, res) => {
 
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
-    const printers = await checkPrintersNetwork({SIMULATION_MODE, isRefresh: true});
+    // lastFunctionCallTime = new Date();
+    
+    let currentTime = new Date();
+    const timeDiffInSeconds = (currentTime - lastFunctionCallTime) / 1000;
+    console.log("timeDiffInSeconds", timeDiffInSeconds)
+    if (timeDiffInSeconds > 30) {
+      printers = await checkPrintersNetwork({SIMULATION_MODE, isRefresh: true});
+      lastFunctionCallTime = new Date();
+    } 
 
-    cb(printers, new Date().toLocaleString().split(" ")[1]);
+    io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
+    // cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (event, printer, checkPing = true) => {
     let online = printer.online;

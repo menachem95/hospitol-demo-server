@@ -62,9 +62,19 @@ export async function checkOnePrinterNetwork({ SIMULATION_MODE, printer }) {
   const { _id, address } = printer;
   {
     try {
-      const online = SIMULATION_MODE ? Math.random() > 0.2 ? true : false : await isPrinterOnline(address);
+      const online = SIMULATION_MODE
+        ? Math.random() > 0.2
+          ? true
+          : false
+        : await isPrinterOnline(address);
       let date = new Date();
-     new Log({ online, address, date, isRefresh: true, printer_id: _id }).save();
+      new Log({
+        online,
+        address,
+        date,
+        isRefresh: true,
+        printer_id: _id,
+      }).save();
       return online;
     } catch (error) {
       console.error("Error checking printer status:", error);
@@ -72,4 +82,3 @@ export async function checkOnePrinterNetwork({ SIMULATION_MODE, printer }) {
     }
   }
 }
-
