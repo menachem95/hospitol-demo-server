@@ -105,6 +105,7 @@ io.on("connection", (socket) => {
     } 
 
     io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
+    
     // cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (event, printer, checkPing = true) => {
