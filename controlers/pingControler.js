@@ -58,7 +58,7 @@ function isPrinterOnline(address) {
   });
 }
 
-export async function checkOnePrinterNetwork({ SIMULATION_MODE, printer }) {
+export async function checkOnePrinterNetwork( SIMULATION_MODE, printer ) {
   const { _id, address } = printer;
   {
     try {

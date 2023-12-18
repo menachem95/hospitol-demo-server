@@ -110,26 +110,37 @@ io.on("connection", (socket) => {
   });
   socket.on("update-printres", async (event, printer, checkPing = true) => {
     let online = printer.online;
+    let _id = printer._id;
     const address = printer.address;
     let newPrinter = { ...printer };
     console.log("printer: ", printer);
     if (event === "delete") {
       await Printer.findByIdAndDelete(printer._id);
-    } else if (checkPing) {
-      online = await checkOnePrinterNetwork({SIMULATION_MODE, address});
+    } else if (event === "add"){
+      newPrinter = await Printer.create({ ...printer });
+     console.log("newPrinter._id",newPrinter._id.toString())
+      _id = newPrinter._id.toString();
     }
+    
+    
+console.log("_id", _id);
 
-    if (event === "update") {
+    if (event === "update" || event === "add") {
+      const p = {address, _id}
+      // (checkPing) {
+        online = await checkOnePrinterNetwork(SIMULATION_MODE, p);
+        console.log("online",online)
       newPrinter = await Printer.findByIdAndUpdate(
-        printer._id,
+       _id,
         { ...printer, online },
         {
           new: true,
         }
       );
-    } else if (event === "add") {
-      newPrinter = await Printer.create({ ...printer, online });
     }
+    //  else if (event === "add") {
+    //   newPrinter = await Printer.create({ ...printer, online });
+    // }
 
     console.log("newPrinter:", newPrinter);
     io.emit("update-printres", event, newPrinter);
