@@ -19,8 +19,8 @@ import {
 import { Log } from "./models/log.js";
 // process.env.TZ = 'Europe/Jerusalem';
 dotenv.config();
-const SIMULATION_MODE = Boolean(process.env.SIMULATION_MODE)
-console.log("SIMULATION_MODE:", SIMULATION_MODE)
+const SIMULATION_MODE = Boolean(process.env.SIMULATION_MODE);
+console.log("SIMULATION_MODE:", SIMULATION_MODE);
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
 const server = http.createServer(app);
@@ -34,7 +34,7 @@ let printers = [];
 const getPrinters = async () => {
   const time = new Date().toLocaleTimeString();
   console.log(`Task started at ${time}`);
-  printers = await checkPrintersNetwork({SIMULATION_MODE});
+  printers = await checkPrintersNetwork({ SIMULATION_MODE });
   io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
 };
 
@@ -64,7 +64,6 @@ let intervalMinutes = 5;
 
 let lastFunctionCallTime = new Date();
 
-
 let intervalId;
 const startInterval = () => {
   if (intervalId) clearInterval(intervalId);
@@ -74,7 +73,7 @@ const startInterval = () => {
     getPrinters();
   }, intervalMinutes * 60 * 1000);
 };
-
+getPrinters();
 startInterval();
 
 app.post("/setinterval", (req, res) => {
@@ -95,17 +94,25 @@ app.get("/server-confing", (req, res) => {
 io.on("connection", (socket) => {
   socket.on("refresh", async (cb) => {
     // lastFunctionCallTime = new Date();
-    
+
     let currentTime = new Date();
     const timeDiffInSeconds = (currentTime - lastFunctionCallTime) / 1000;
-    console.log("timeDiffInSeconds", timeDiffInSeconds)
+    console.log("timeDiffInSeconds", timeDiffInSeconds);
     if (timeDiffInSeconds > 30) {
-      printers = await checkPrintersNetwork({SIMULATION_MODE, isRefresh: true});
+      printers = await checkPrintersNetwork({
+        SIMULATION_MODE,
+        isRefresh: true,
+      });
       lastFunctionCallTime = new Date();
-    } 
+    }
 
-    io.emit("send-printers", printers, new Date().toLocaleString().split(" ")[1]);
     
+    io.emit(
+      "send-printers",
+      printers,
+      new Date().toLocaleString().split(" ")[1]
+    );
+
     // cb(printers, new Date().toLocaleString().split(" ")[1]);
   });
   socket.on("update-printres", async (event, printer, checkPing = true) => {
@@ -116,22 +123,21 @@ io.on("connection", (socket) => {
     console.log("printer: ", printer);
     if (event === "delete") {
       await Printer.findByIdAndDelete(printer._id);
-    } else if (event === "add"){
+    } else if (event === "add") {
       newPrinter = await Printer.create({ ...printer });
-     console.log("newPrinter._id",newPrinter._id.toString())
+      console.log("newPrinter._id", newPrinter._id.toString());
       _id = newPrinter._id.toString();
     }
-    
-    
-console.log("_id", _id);
+
+    console.log("_id", _id);
 
     if (event === "update" || event === "add") {
-      const p = {address, _id}
+      const p = { address, _id };
       // (checkPing) {
-        online = await checkOnePrinterNetwork(SIMULATION_MODE, p);
-        console.log("online",online)
+      online = await checkOnePrinterNetwork(SIMULATION_MODE, p);
+      console.log("online", online);
       newPrinter = await Printer.findByIdAndUpdate(
-       _id,
+        _id,
         { ...printer, online },
         {
           new: true,
@@ -146,7 +152,7 @@ console.log("_id", _id);
     io.emit("update-printres", event, newPrinter);
   });
   socket.on("onePing", async (printer) => {
-    const online = await checkOnePrinterNetwork({SIMULATION_MODE, printer});
+    const online = await checkOnePrinterNetwork({ SIMULATION_MODE, printer });
     io.emit("update-printres", "update", { ...printer, online });
   });
 });

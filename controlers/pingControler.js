@@ -45,6 +45,7 @@ export async function checkPrintersNetwork({
       await Printer.findByIdAndUpdate(log.printer_id, { online: log.online });
     });
     return await Printer.find();
+    // return newLogs
   } catch (err) {
     console.log(err);
   }
