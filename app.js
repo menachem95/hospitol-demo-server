@@ -17,6 +17,7 @@ import {
   checkOnePrinterNetwork,
 } from "./controlers/pingControler.js";
 import { Log } from "./models/log.js";
+import { log } from "console";
 // process.env.TZ = 'Europe/Jerusalem';
 dotenv.config();
 const SIMULATION_MODE = Boolean(process.env.SIMULATION_MODE);
@@ -152,7 +153,7 @@ io.on("connection", (socket) => {
     io.emit("update-printres", event, newPrinter);
   });
   socket.on("onePing", async (printer) => {
-    const online = await checkOnePrinterNetwork({ SIMULATION_MODE, printer });
+    const online = await checkOnePrinterNetwork( SIMULATION_MODE, printer );
     io.emit("update-printres", "update", { ...printer, online });
   });
 });

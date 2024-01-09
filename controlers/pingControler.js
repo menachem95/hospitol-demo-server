@@ -51,6 +51,7 @@ export async function checkPrintersNetwork({
   }
 }
 
+
 function isPrinterOnline(address) {
   return new Promise((resolve, reject) => {
     ping.sys.probe(address, function (isAlive) {
