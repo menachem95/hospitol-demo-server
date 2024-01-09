@@ -18,13 +18,15 @@ import {
 } from "./controlers/pingControler.js";
 import { Log } from "./models/log.js";
 import { log } from "console";
-// process.env.TZ = 'Europe/Jerusalem';
+
 dotenv.config();
-const SIMULATION_MODE = Boolean(process.env.SIMULATION_MODE);
+// const SIMULATION_MODE = Boolean(process.env.SIMULATION_MODE);
+const SIMULATION_MODE = process.env.SIMULATION_MODE;
 console.log("SIMULATION_MODE:", SIMULATION_MODE);
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.avjb12c.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
 const server = http.createServer(app);
+
 
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
